@@ -8,9 +8,6 @@ const ContentList = (props) => {
   const loadMore = () => {
     setVisible((visible) => visible + 6);
   };
-
-  console.log();
-
   return (
     <React.Fragment>
       <div className="main">

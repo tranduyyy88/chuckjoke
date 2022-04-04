@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useContext } from "react";
-import { MContext } from "../../App";
+import { getPostSearch } from "../../Services/posts.services.ts";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -52,14 +50,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Header = (props) => {
-  const context = useContext(MContext);
   const [data, setData] = useState([]);
   const { register, handleSubmit } = useForm();
   const onSubmit = (value) => {
-    axios
-      .get(
-        `https://api.chucknorris.io/jokes/search?query=${value.search || "all"}`
-      )
+    getPostSearch(value.search)
       .then(function (response) {
         props.parentCallback(response.data.result);
         setData(response.data.result);

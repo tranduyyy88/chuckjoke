@@ -1,9 +1,9 @@
 import React from "react";
 import { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import Category from "./category.tsx";
-import ContentList from "./contentList.tsx";
+import ContentList from "../Content/contentList.tsx";
 import { MContext } from "../../App";
+import { getPost } from "../../Services/posts.services.ts";
 const Content = () => {
   const dataSearch = useContext(MContext);
   const [data, setData] = useState([]);
@@ -14,8 +14,7 @@ const Content = () => {
   }, [dataSearch]);
 
   useEffect(() => {
-    axios
-      .get("https://api.chucknorris.io/jokes/search?query=all")
+    getPost()
       .then(function (response) {
         setData(response.data.result);
         setTmpData(response.data.result);
