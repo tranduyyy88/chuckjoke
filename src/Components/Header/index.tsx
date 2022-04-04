@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { getPostSearch } from "../../Services/posts.services.ts";
+import { getPostSearch, getPost } from "../../Services/posts.services.ts";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -51,12 +51,25 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Header = (props) => {
   const [data, setData] = useState([]);
+  const [dataSearch, setDataSearch] = useState([]);
+  const [valuesSearch, setValuesSearch] = useState([]);
   const { register, handleSubmit } = useForm();
   const onSubmit = (value) => {
     getPostSearch(value.search)
       .then(function (response) {
         props.parentCallback(response.data.result);
         setData(response.data.result);
+      })
+      .catch(function (error) {})
+      .then(function () {
+        // always executed
+      });
+  };
+  const handleSearch = (values) => {
+    setValuesSearch(values);
+    getPostSearch(values)
+      .then(function (response) {
+        setDataSearch(response.data.result);
       })
       .catch(function (error) {})
       .then(function () {
@@ -77,19 +90,54 @@ const Header = (props) => {
       <div className="Header__banner">
         <Typography variant="h2">The Joke Bible</Typography>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Search>
-            <button type="submit">
-              <SearchIcon />
-            </button>
-            <StyledInputBase
-              fullWidth
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              {...register("search")}
-            />
-          </Search>
-        </form>
+        <div
+          className={
+            (dataSearch.length <= 8 && "Header__banner--form ") ||
+            "Header__banner--form scroll"
+          }
+        >
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Search>
+              <button type="submit">
+                <SearchIcon />
+              </button>
+              <StyledInputBase
+                fullWidth
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                {...register("search")}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </Search>
+          </form>
+
+          <ul
+            className={
+              (valuesSearch.length === 0 && "formatResult hide") ||
+              "formatResult"
+            }
+          >
+            {dataSearch.length === 0 && (
+              <li>
+                <p>No Result</p>
+              </li>
+            )}
+            {dataSearch.map((item, key) => {
+              return (
+                <li key={key}>
+                  <Link
+                    to={`/content/${item.id}`}
+                    style={{
+                      textDecoration: "none",
+                    }}
+                  >
+                    <p>{item.value}</p>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );
