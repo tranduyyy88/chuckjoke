@@ -51,7 +51,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Header = (props) => {
   const [data, setData] = useState([]);
-  const [dataSearch, setDataSearch] = useState([]);
   const [valuesSearch, setValuesSearch] = useState([]);
   const { register, handleSubmit } = useForm();
   const onSubmit = (value) => {
@@ -69,7 +68,8 @@ const Header = (props) => {
     setValuesSearch(values);
     getPostSearch(values)
       .then(function (response) {
-        setDataSearch(response.data.result);
+        props.parentCallback(response.data.result);
+        setData(response.data.result);
       })
       .catch(function (error) {})
       .then(function () {
@@ -92,7 +92,7 @@ const Header = (props) => {
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
         <div
           className={
-            (dataSearch.length <= 8 && "Header__banner--form ") ||
+            (data.length <= 8 && "Header__banner--form ") ||
             "Header__banner--form scroll"
           }
         >
@@ -117,12 +117,12 @@ const Header = (props) => {
               "formatResult"
             }
           >
-            {dataSearch.length === 0 && (
+            {data.length === 0 && (
               <li>
                 <p>No Result</p>
               </li>
             )}
-            {dataSearch.map((item, key) => {
+            {data.map((item, key) => {
               return (
                 <li key={key}>
                   <Link
